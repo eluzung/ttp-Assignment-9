@@ -14,6 +14,8 @@ function AppComponent() {
   const [balance, setBalance] = useState(0);
   const [debitHistory, setDebitHistory] = useState([]);
   const [creditHistory, setCreditHistory] = useState([]);
+  const [initialDebit, setInitialDebit] = useState(0);
+  const [initialCredit, setInitialCredit] = useState(0);
 
   useEffect(() => {
     async function getData() {
@@ -22,11 +24,13 @@ function AppComponent() {
           "https://bank-of-react-b745wfs0u-ajlapid718.vercel.app/credits"
         );
         setCredit(creditNum.data);
+        setInitialCredit(creditNum.data);
 
         let debitNum = await axios.get(
           "https://bank-of-react-b745wfs0u-ajlapid718.vercel.app/debits"
         );
         setDebit(debitNum.data);
+        setInitialDebit(debitNum.data);
 
         setBalance(creditNum.data - debitNum.data);
       } catch (error) {
@@ -40,13 +44,13 @@ function AppComponent() {
   const handleDebit = (newDebit) => {
     setDebit(Number(debit) + Number(newDebit.amount));
     setBalance(balance - newDebit.amount);
-    setDebitHistory([...debitHistory, newDebit]);
+    setDebitHistory([newDebit, ...debitHistory]);
   };
 
   function handleCredit(newCredit) {
     setCredit(credit + newCredit.amount);
     setBalance(balance - newCredit.amount);
-    setCreditHistory([...creditHistory, newCredit]);
+    setCreditHistory([newCredit, ...creditHistory]);
   }
 
   return (
@@ -57,7 +61,20 @@ function AppComponent() {
 
         {/* Routes */}
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route
+            path="/"
+            element={
+              <Home
+                currentBalance={
+                  <AccountBalance
+                    credit={credit}
+                    debit={debit}
+                    balance={balance}
+                  />
+                }
+              />
+            }
+          />
           <Route
             path="/debit"
             element={
@@ -65,6 +82,14 @@ function AppComponent() {
                 debit={debit}
                 debitHistory={debitHistory}
                 handleDebit={handleDebit}
+                initialDebit={initialDebit}
+                currentBalance={
+                  <AccountBalance
+                    credit={credit}
+                    debit={debit}
+                    balance={balance}
+                  />
+                }
               />
             }
           />
@@ -75,13 +100,18 @@ function AppComponent() {
                 credit={credit}
                 creditHistory={creditHistory}
                 handleCredit={handleCredit}
+                initialCredit={initialCredit}
+                currentBalance={
+                  <AccountBalance
+                    credit={credit}
+                    debit={debit}
+                    balance={balance}
+                  />
+                }
               />
             }
           />
         </Routes>
-        <div className="account-balance">
-          <AccountBalance credit={credit} debit={debit} balance={balance} />
-        </div>
       </div>
     </Router>
   );
