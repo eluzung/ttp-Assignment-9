@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function Debit(props) {
-  let initialDebit = props.debit;
+  const initialDebit = props.initialDebit;
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const date = new Date().toLocaleDateString();
@@ -44,6 +44,8 @@ function Debit(props) {
       <h1>Debit Page</h1>
       <button onClick={navigateToHome}>Return to Home Page</button>
 
+      {props.currentBalance}
+
       <form onSubmit={addForm} className="form">
         <label>Enter a description</label>
         <input
@@ -64,12 +66,12 @@ function Debit(props) {
 
       <h2>Debit History</h2>
       <div className="history-container">
+        {loadHistory()}
         <div className="initial-debt">
           <p>Date: {date}</p>
           <p>Description: Initial Debt</p>
           <p>Amount: {initialDebit}</p>
         </div>
-        {loadHistory()}
       </div>
     </div>
   );
